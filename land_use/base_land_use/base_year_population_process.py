@@ -146,6 +146,7 @@ def copy_addressbase_files(by_lu_obj):
     print('Step 3.2.1 completed')
 
 
+
 def filled_properties(by_lu_obj):
     """
     This is a rough account for unoccupied properties using KS401UK at LSOA level to infer whether the properties
