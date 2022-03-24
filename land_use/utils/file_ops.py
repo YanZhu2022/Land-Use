@@ -368,7 +368,7 @@ def read_pickle(path: lu.PathLike,
         )
 
 
-def write_pickle(obj: pd.DataFrame, path: lu.PathLike, **kwargs) -> pd.DataFrame:
+def write_pickle(obj: pd.DataFrame, path: lu.PathLike, **kwargs) -> None:
     """
     Reads in the dataframe at path. Decompresses the df if needed.
 

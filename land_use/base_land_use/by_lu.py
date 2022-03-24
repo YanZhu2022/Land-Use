@@ -1,17 +1,19 @@
 import logging
 import os
+import collections
 from land_use import lu_constants
 from land_use.utils import file_ops
 from land_use.base_land_use import base_year_population_process, employment
+from land_use.pathing.by_lu_paths import BaseYearLandUsePaths
 
 
-class BaseYearLandUse:
+class BaseYearLandUse (BaseYearLandUsePaths):
     def __init__(self,
                  model_folder=lu_constants.LU_FOLDER,
                  output_folder=lu_constants.BY_FOLDER,
                  iteration=lu_constants.LU_MR_ITER,
                  import_folder=lu_constants.LU_IMPORTS,
-                 model_zoning='MSOA',
+                 model_zoning=lu_constants.ZONE_NAME,
                  zones_folder=lu_constants.ZONES_FOLDER,
                  zone_translation_path=lu_constants.ZONE_TRANSLATION_PATH,
                  ks401path=lu_constants.KS401_PATH,
@@ -21,7 +23,9 @@ class BaseYearLandUse:
                  emp_soc_cat_data_path=lu_constants.SOC_BY_REGION,
                  emp_unm_data_path=lu_constants.UNM_DATA,
                  base_year='2019',
-                 scenario_name=None):
+                 scenario_name=None,
+                 census_year=2011,
+                 ):
         """
         parse parameters from run call (file paths, requested outputs and audits)
         area types: NTEM / TfN
@@ -56,6 +60,13 @@ class BaseYearLandUse:
         self.base_year = base_year
         self.scenario_name = scenario_name.upper() if scenario_name is not None else ''
 
+        # Set up superclass
+        super().__init__(
+                         iteration=iteration,
+                         base_year=base_year,
+                         census_year=census_year,
+                         model_zoning=model_zoning
+                         )
         # Build paths
         print('Building Base Year paths and preparing to run')
         write_folder = os.path.join(
@@ -183,7 +194,7 @@ class BaseYearLandUse:
             logging.info('\n' + '=' * 75)
             logging.info('Running step 3.2.2, calculating the filled property adjustment factors')
             print('\n' + '=' * 75)
-            base_year_population_process.filled_properties(self)
+            filled_prop_df = base_year_population_process.filled_properties(self)
 
         if self.state['3.2.3 household occupancy adjustment'] == 0:
             logging.info('')
@@ -237,6 +248,7 @@ class BaseYearLandUse:
             print('\n' + '=' * 75)
             logging.info('Running step 3.2.10, adjust zonal pop with full dimensions')
             base_year_population_process.adjust_zonal_workers_nonworkers(self)
+
 
         # Step 3.2.11 should always be called from Step 3.2.10 (to save read/writing massive files)
         # Syntax for calling it is maintained here (albeit commented out) for QA purposes

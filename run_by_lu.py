@@ -1,8 +1,8 @@
-from land_use.base_land_use import census_lu, by_lu
+from land_use.base_land_use import census_lu
+from land_use.base_land_use import by_lu
 
 
 def main():
-
     run_census = False
     run_pop = True
     run_emp = False
@@ -10,6 +10,7 @@ def main():
     iteration = 'iter4l'
     census_year = '2011'
     base_year = '2019'
+
 
     print('Building lu run, %s' % iteration)
     print('Census year is %s' % census_year)
