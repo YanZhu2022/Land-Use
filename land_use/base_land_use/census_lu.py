@@ -14,7 +14,7 @@ class CensusYearLandUse:
                  model_zoning='MSOA',
                  zones_folder=consts.ZONES_FOLDER,
                  zone_translation_path=consts.ZONE_TRANSLATION_PATH,
-                 ks401path=consts.KS401_PATH,
+                 ks401path=consts.KS401_PATH_FNAME,
                  area_type_path=consts.LU_AREA_TYPES,
                  CTripEnd_Database_path=consts.CTripEnd_Database,
                  base_year='2011',

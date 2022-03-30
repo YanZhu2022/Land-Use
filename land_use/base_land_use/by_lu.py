@@ -1,6 +1,19 @@
+"""
+Created on: -
+Updated on: Friday March 25th 2022
+
+Original author: -
+Last update made by: Nirmal Kumar
+
+
+File purpose:
+Base year Land Use Model for NorMITS
+"""
 import logging
 import os
+import warnings
 import collections
+import land_use as lu
 from land_use import lu_constants
 from land_use.utils import file_ops
 from land_use.base_land_use import base_year_population_process, employment
@@ -8,6 +21,8 @@ from land_use.pathing.by_lu_paths import BaseYearLandUsePaths
 
 
 class BaseYearLandUse (BaseYearLandUsePaths):
+    _log_fname = "%s_base_year_land_use.log"
+
     def __init__(self,
                  model_folder=lu_constants.LU_FOLDER,
                  output_folder=lu_constants.BY_FOLDER,
@@ -16,7 +31,7 @@ class BaseYearLandUse (BaseYearLandUsePaths):
                  model_zoning=lu_constants.ZONE_NAME,
                  zones_folder=lu_constants.ZONES_FOLDER,
                  zone_translation_path=lu_constants.ZONE_TRANSLATION_PATH,
-                 ks401path=lu_constants.KS401_PATH,
+                 ks401path=lu_constants.KS401_PATH_FNAME,
                  area_type_path=lu_constants.LU_AREA_TYPES,
                  ctripend_database_path=lu_constants.CTripEnd_Database,
                  emp_e_cat_data_path=lu_constants.E_CAT_DATA,
@@ -35,12 +50,11 @@ class BaseYearLandUse (BaseYearLandUsePaths):
         """
 
         # TODO: Add versioning
-
         # File ops
-        self.model_folder = model_folder + '/' + output_folder
-        self.iteration = iteration
-        self.home_folder = model_folder + '/' + output_folder + '/' + iteration
-        self.import_folder = model_folder + '/' + import_folder + '/'
+        # self.model_folder = model_folder + '/' + output_folder
+        # self.iteration = iteration
+        # self.home_folder = model_folder + '/' + output_folder + '/' + iteration
+        # self.import_folder = model_folder + '/' + import_folder + '/'
 
         # Resi inputs
         self.addressbase_path_list = lu_constants.ADDRESSBASE_PATH_LIST
@@ -104,8 +118,8 @@ class BaseYearLandUse (BaseYearLandUsePaths):
             '3.2.11_process_CER_data']
 
         # Build folders
-        if not os.path.exists(write_folder):
-            file_ops.create_folder(write_folder)
+        if not os.path.exists(self.write_folder):
+            file_ops.create_folder(self.write_folder)
         # Report folder not currently in use.
         # if not os.path.exists(report_folder):
         #     file_ops.create_folder(report_folder)
@@ -147,7 +161,18 @@ class BaseYearLandUse (BaseYearLandUsePaths):
         self.norcom = 'import from NorCOM'
         # self.norcom = 'export to NorCOM'
 
-    def build_by_pop(self):
+        # Create a logger
+        logger_name = "%s.%s" % (lu.get_package_logger_name(), self.__class__.__name__)
+        log_file_path = os.path.join(self.log_folder, self._log_fname % self.base_year)
+        self._logger = lu.get_logger(
+            logger_name=logger_name,
+            log_file_path=log_file_path,
+            instantiate_msg="Initialised New Base Year Land Use Model %s" % self.base_year,
+        )
+        print(logger_name)
+        print(self._logger)
+
+    def build_by_pop(self, verbose: bool = True):
         # TODO: Method name, this is more of an adjustment to a base now
         """
 
@@ -157,24 +182,6 @@ class BaseYearLandUse (BaseYearLandUsePaths):
         """
         # Check which parts of the process need running
         # Make a new sub folder of the home directory for the iteration and set this as the working directory
-        os.chdir(self.model_folder)
-        file_ops.create_folder(self.iteration, ch_dir=True)
-        os.chdir('00 Logging')
-        # Create log file without overwriting existing files
-        base_year_log_name = '_'.join([self.base_year, 'base_year_land_use.log'])
-        base_year_log_dir = os.getcwd()
-        if os.path.exists(os.path.join(base_year_log_dir, base_year_log_name)):
-            log_v_count = 1
-            og_base_year_log_name = base_year_log_name[:-4]
-            while os.path.exists(os.path.join(base_year_log_dir, base_year_log_name)):
-                base_year_log_name = ''.join([og_base_year_log_name, '_', str(log_v_count), '.log'])
-                log_v_count = log_v_count + 1
-                print('The last log name I tried was already taken!')
-                print('Now trying log name: %s' % base_year_log_name)
-        logging.basicConfig(filename=base_year_log_name,
-                            level=logging.INFO,
-                            format='%(asctime)s: %(message)s')
-
 
         # TODO: Check that this picks up the 2011 process!
 
@@ -183,70 +190,70 @@ class BaseYearLandUse (BaseYearLandUsePaths):
         # Steps from main build
         # TODO: Decide if this is used for anything anymore
         if self.state['3.2.1 read in core property data'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
-            logging.info('Running step 3.2.1, reading in core property data')
+            self._logger.info("")
+            self._logger.info("\n" + "=" * 75)
+            self._logger.info("Running step 3.2.1, reading in core property data")
             print('\n' + '=' * 75)
-            base_year_population_process.copy_addressbase_files(self)
+            base_year_population_process.copy_addressbase_files(self, verbose=verbose)
 
         if self.state['3.2.2 filled property adjustment'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
-            logging.info('Running step 3.2.2, calculating the filled property adjustment factors')
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
+            self._logger.info('Running step 3.2.2, calculating the filled property adjustment factors')
             print('\n' + '=' * 75)
-            filled_prop_df = base_year_population_process.filled_properties(self)
+            filled_prop_df = base_year_population_process.filled_properties(self, verbose=verbose)
 
         if self.state['3.2.3 household occupancy adjustment'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.3, household occupancy adjustment')
-            base_year_population_process.apply_household_occupancy(self)
+            self._logger.info('Running step 3.2.3, household occupancy adjustment')
+            base_year_population_process.apply_household_occupancy(self, prob_filled=filled_prop_df, verbose=verbose)
 
         if self.state['3.2.4 property type mapping'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.4, combining flat types')
+            self._logger.info('Running step 3.2.4, combining flat types')
             base_year_population_process.property_type_mapping(self)
 
         if self.state['3.2.5 Uplifting Base Year population according to Base Year MYPE'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.5, uplifting 2018 population according to 2018 MYPE')
+            self._logger.info('Running step 3.2.5, uplifting 2018 population according to 2018 MYPE')
             base_year_population_process.mye_pop_compiled(self)
 
         if self.state['3.2.6 and 3.2.7 expand NTEM population to full dimensions and verify pop profile'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.6, expand NTEM population to full dimensions')
-            logging.info('Also running step 3.2.7, verify population profile by dwelling type')
-            base_year_population_process.pop_with_full_dimensions(self)
+            self._logger.info('Running step 3.2.6, expand NTEM population to full dimensions')
+            self._logger.info('Also running step 3.2.7, verify population profile by dwelling type')
+            base_year_population_process.pop_with_full_dimensions(self, verbose=verbose)
 
         if self.state['3.2.8 get subsets of worker and non-worker'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.8, get subsets of worker and non-worker')
-            logging.info('Called from "census_lu.py" so saving outputs to files')
-            logging.info('but not saving any variables to memory')
-            logging.info('Note that this function will get called again by other functions')
+            self._logger.info('Running step 3.2.8, get subsets of worker and non-worker')
+            self._logger.info('Called from "census_lu.py" so saving outputs to files')
+            self._logger.info('but not saving any variables to memory')
+            self._logger.info('Note that this function will get called again by other functions')
             base_year_population_process.subsets_worker_nonworker(self, 'census_and_by_lu')
 
         if self.state['3.2.9 verify district level worker and non-worker'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.9, verify district level worker and non-worker')
+            self._logger.info('Running step 3.2.9, verify district level worker and non-worker')
             base_year_population_process.la_level_adjustment(self)
 
         if self.state['3.2.10 adjust zonal pop with full dimensions'] == 0:
-            logging.info('')
-            logging.info('\n' + '=' * 75)
+            self._logger.info('')
+            self._logger.info('\n' + '=' * 75)
             print('\n' + '=' * 75)
-            logging.info('Running step 3.2.10, adjust zonal pop with full dimensions')
+            self._logger.info('Running step 3.2.10, adjust zonal pop with full dimensions')
             base_year_population_process.adjust_zonal_workers_nonworkers(self)
 
 

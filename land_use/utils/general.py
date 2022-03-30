@@ -44,6 +44,26 @@ from land_use import lu_constants as consts
 # TODO: Utils is getting big. Refactor into smaller, more specific modules
 
 
+class LandUseError(Exception):
+    """
+    Base Exception for all custom NorMITS demand errors
+    """
+
+    def __init__(self, message=None):
+        self.message = message
+        super().__init__(self.message)
+
+
+class InitialisationError(LandUseError):
+    """
+    Exception for all errors that occur during land_use initialisation
+    """
+
+    def __init__(self, message=None):
+        self.message = message
+        super().__init__(self.message)
+
+
 def print_w_toggle(*args, verbose, **kwargs):
     """
     Small wrapper to only print when verbose=True

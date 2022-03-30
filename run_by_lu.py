@@ -7,9 +7,9 @@ def main():
     run_pop = True
     run_emp = False
 
-    iteration = 'iter4l'
+    iteration = 'trial_run_NK'
     census_year = '2011'
-    base_year = '2019'
+    base_year = '2018'
 
 
     print('Building lu run, %s' % iteration)
@@ -20,7 +20,7 @@ def main():
         census_run = census_lu.CensusYearLandUse(iteration=iteration)
         census_run.build_by_pop()
 
-    lu_run = by_lu.BaseYearLandUse(iteration=iteration, base_year=base_year)
+    lu_run = by_lu.BaseYearLandUse(iteration=iteration, base_year=base_year, census_year= census_year)
 
     if run_pop:
         lu_run.build_by_pop()

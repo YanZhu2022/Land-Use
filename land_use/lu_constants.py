@@ -6,6 +6,8 @@ import os
 
 import pandas as pd
 
+PACKAGE_NAME = __name__.split('.')[0]
+
 # SUFFIXES AND SEMI-STATIC CONFIG
 COMPRESSION_SUFFIX = '.pbz2'
 PROCESS_COUNT = -2
@@ -33,6 +35,7 @@ KS401_PATH_FNAME = LU_FOLDER + '/' + LU_IMPORTS + '/' + 'Nomis Census 2011 Head 
 LU_AREA_TYPES = LU_FOLDER + '/area types/TfNAreaTypesLookup.csv'
 ALL_RES_PROPERTY_PATH = 'I:/NorMITs Land Use/import/AddressBase/2018/processed'
 CTripEnd_Database = 'I:/Data/NTEM/NTEM 7.2 outputs for TfN/'
+LU_LOGGING_DIR = '00 Logging'
 LU_PROCESS_DIR = '01 Process'
 LU_AUDIT_DIR = '02 Audits'
 LU_OUTPUT_DIR = '03 Outputs'
@@ -239,10 +242,12 @@ BY_POP_BUILD_STEP_DESCS = [
 ZONE_TRANSLATION_COL = {'lsoa_zone_id': 'lsoaZoneID',
                         'msoa_zone_id': 'msoaZoneID'
                         }
+UK_MSOA_COL = {'msoa11cd': 'msoaZoneID'}
 FILLED_PROPS_COL = {'geography code': 'geography_code',
                     'Dwelling Type: All categories: Household spaces; measures: Value': 'Total_Dwells',
                     'Dwelling Type: Household spaces with at least one usual resident; measures: Value': 'Filled_Dwells'
                     }
+CPT_DATA_COL = {'lsoa11cd': 'lsoaZoneID'}
 
 # Exports for Step 3.2.2
 FILLED_PROPERTIES_FNAME = 'gb_msoa_%s_dwells_occ.csv'
@@ -257,6 +262,7 @@ SQS401 = 'QS_401UK_DZ_2011.csv'
 EWQS402 = 'QS402UK_LSOA.csv'
 SQS402 = 'QS402UK_DZ_2011.csv'
 ADDRESSBASE_EXTRACT_PATH = 'allResProperty%sClassified.csv'
+ZONE_TRANSLATION_PATH_LAD_MSOA = os.path.join(ZONES_FOLDER, 'Export/lad_to_msoa/lad_to_msoa.csv')
 
 # Constants for Step 3.2.5
 MYE_POP_COMPILED_NAME = 'MYE_pop_compiled'
@@ -265,22 +271,22 @@ MODEL_YEAR = '2018'
 MYE_MSOA_POP_NAME = 'gb_%s_%s_pop+hh_pop.csv'
 MYE_ONS_FOLDER = 'MYE %s ONS'
 POP_PROCESS_INPUTS = '%s_pop_process_inputs'
-NOMIS_MYPE_MSOA_AGE_GENDER_PATH = 'nomis_%s_MYPE_MSOA_Age_Gender.csv' % MODEL_YEAR
+NOMIS_MYPE_MSOA_AGE_GENDER_PATH = 'nomis_%s_MYPE_MSOA_Age_Gender.csv'
 GEOGRAPHY_DIRECTORY = 'Population Processing lookups'
 UK_2011_AND_2021_LA_PATH = r'UK_2011_and_2021_LA_IDs.csv'
 SCOTTISH_2011_Z2LA_PATH = r'2011_Scottish_Zones_to_LA.csv'
 LOOKUP_GEOGRAPHY_2011_PATH = r'I:\NorMITs Land Use\import\2011 Census Micro lookups\geography.csv'
 QS101_UK_PATH = r'I:\NorMITs Land Use\import\Nomis Census 2011 Head & Household\211022_QS101UK_ResidenstType_MSOA.csv'
 MID_YEAR_MSOA = '%s_MidyearMSOA'
-SCOTTISH_MALES_PATH = 'Males_Scotland_%s.csv' % MODEL_YEAR
-SCOTTISH_FEMALES_PATH = 'Females_Scotland_%s.csv' % MODEL_YEAR
+SCOTTISH_MALES_PATH = 'Males_Scotland_%s.csv'
+SCOTTISH_FEMALES_PATH = 'Females_Scotland_%s.csv'
 # Path with manual corrections to make proportions equal 1
 LA_TO_MSOA_UK_PATH = r'I:\NorMITs Synthesiser\Zone Translation\Export\lad_to_msoa\lad_to_msoa_normalised.csv'
 SCOTTISH_LA_CHANGES_POST_2011_PATH = r'ca11_ca19.csv'
-APS_FTPT_GENDER_PATH = 'nomis_APS_FTPT_Gender_%s_only.csv' % MODEL_YEAR
-INPUTS_DIRECTORY_APS = os.path.join('NOMIS APS', MODEL_YEAR)
-NOMIS_MYE_POP_BY_LA_PATH = 'nomis_%s_MYE_LA_withareacodes_total_gender.csv' % MODEL_YEAR
-APS_SOC_PATH = 'nomis_APS_SOC_%s'
+APS_FTPT_GENDER_PATH = 'nomis_APS_FTPT_Gender_%s_only.csv'
+INPUTS_DIRECTORY_APS = 'NOMIS APS'
+NOMIS_MYE_POP_BY_LA_PATH = 'nomis_%s_MYE_LA_withareacodes_total_gender.csv'
+APS_SOC_PATH = 'nomis_APS_SOC_%s.csv'
 POP_SEG_FNAME = r'CTripEnd/Pop_Segmentations.csv'
 CTripEnd = 'CTripEnd7_%d.accdb'
 POP_DROP = ['E01', 'E02', 'E03', 'E04', 'E05', 'E06', 'E07', 'E08', 'E09', 'E10', 'E11', 'E12', 'E13', 'E14', 'E15',
@@ -419,7 +425,7 @@ VERIFIED_D_NON_WORKER_FNAME = 'output_2_resi_gb_lad_tfn_tt_agg_prt_%s_nwkrs'
 NORMITS_SEG_TO_TFN_TT_FNAME = r'Lookups\NorMITs_segments_to_TfN_tt\normits_segs_to_tfn_tt.csv'
 
 # Imports for 3.2.10
-NOMIS_MYE_PATH = 'nomis_MYE_%s.csv' % MODEL_YEAR
+NOMIS_MYE_PATH = 'nomis_MYE_%s.csv'
 
 # Constants for 3.2.10
 CER_POP_EXPANDED_COLS = ['MSOA', 'Zone', 'a', 'g', 'h', 'e', 't', 'n', 's', '2021_LA_Name', 'zaghetns_CER']
