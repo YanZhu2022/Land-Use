@@ -35,7 +35,17 @@ class AuditError(gen.LandUseError):
 
 
 def audit_3_2_1(self) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.1.
+
+    Parameters
+    ----------
+    -
+
+    Returns
+    -------
+    None
+    """
     out_lines = [
         '### Audit for Step 3.2.1 ###',
         'Created: %s' % str(timing.get_datetime()),
@@ -46,7 +56,17 @@ def audit_3_2_1(self) -> None:
 
 
 def audit_3_2_2(self) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.2.
+
+    Parameters
+    ----------
+    -
+
+    Returns
+    -------
+    None
+    """
     out_lines = [
         '### Audit for Step 3.2.2 ###',
         'Created: %s' % str(timing.get_datetime()),
@@ -57,8 +77,18 @@ def audit_3_2_2(self) -> None:
 
 
 def audit_3_2_3(self, all_res_property: pd.DataFrame) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.3.
 
+    Parameters
+    ----------
+    all_res_property: pd.DataFrame
+        Dataframe containing estimated household population.
+
+    Returns
+    -------
+    None
+    """
     arp_msoa_audit = all_res_property.groupby('ZoneID')['population'].sum().reset_index()
     gen.safe_dataframe_to_csv(arp_msoa_audit, self.arp_msoa_audit_path, index=False)
     arp_msoa_audit_total = arp_msoa_audit['population'].sum()
@@ -74,13 +104,30 @@ def audit_3_2_3(self, all_res_property: pd.DataFrame) -> None:
 
 
 def audit_3_2_4(self,
-                crp: pd.DataFrame,
                 crp_for_audit: pd.DataFrame,
                 processed_crp_for_audit: pd.DataFrame,
                 txt1: str = "",
                 ) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.4.
 
+    Parameters
+    ----------
+    crp_for_audit: pd.DataFrame
+        Dataframe containing estimated household population in
+        7 property types.
+
+    processed_crp_for_audit: pd.DataFrame
+        Dataframe containing estimated household population in
+        4 property types.
+
+    txt1: str = ""
+        Dummy string used for processing.
+
+    Returns
+    -------
+    None
+    """
     crp_for_audit = crp_for_audit.groupby(['ZoneID'])[['UPRN', 'population']].sum()
     crp_for_audit = crp_for_audit.rename(columns=const.CRP_COL_RENAME)
     processed_crp_for_audit = processed_crp_for_audit.groupby(['ZoneID'])[['UPRN', 'population']].sum()
@@ -103,8 +150,8 @@ def audit_3_2_4(self,
     out_lines = [
         '### Audit for Step 3.2.4 ###',
         'Created: %s' % str(timing.get_datetime()),
-        'The total number of properties at the end of this step is: %s' % str(crp.UPRN.sum()),
-        'The total population at the end of this step is: %s' % str(crp.population.sum()),
+        'The total number of properties at the end of this step is: %s' % str(processed_crp_for_audit.UPRN.sum()),
+        'The total population at the end of this step is: %s' % str(processed_crp_for_audit.population.sum()),
         'The Step 3.2.4 zonal breakdown of properties and population'
         ' has been checked against Step 3.2.3.',
         txt1,
@@ -122,7 +169,32 @@ def audit_3_2_5(self,
                 audit_mye_msoa_pop: pd.DataFrame,
                 mye_msoa_pop: pd.DataFrame,
                 ) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.5.
+
+    Parameters
+    ----------
+    audit_aj_crp: pd.DataFrame
+        Dataframe containing copy of MYPE compliant household
+        population segmented by zone and dwelling type.
+
+    audit_ntem_hhpop: pd.DataFrame
+        Dataframe containing MYPE compliant NTEM household population
+        segmented by zone, age, gender, household composition and
+        employment status.
+
+    audit_mye_msoa_pop: pd.Dataframe
+        Dataframe containing zonal household population returned from
+        mye_aps_process() for audit purpose.
+
+    mye_msoa_pop: pd.Dataframe
+        Dataframe containing zonal household population returned from
+        mye_aps_process().
+
+    Returns
+    -------
+    None
+    """
     audit_aj_crp = audit_aj_crp[['ZoneID', 'population']]
     audit_aj_crp = audit_aj_crp.groupby(['ZoneID'])['population'].sum().reset_index()
     audit_aj_crp = audit_aj_crp.rename(columns={'population': 'crp_pop', 'ZoneID': 'MSOA'})
@@ -175,7 +247,23 @@ def audit_3_2_6(self,
                 audit_original_hhpop: pd.DataFrame,
                 ntem_hhpop_trim: pd.DataFrame,
                 ) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.6.
+
+    Parameters
+    ----------
+    audit_original_hhpop: pd.DataFrame
+        Dataframe containing zonal household population returned from
+        mye_aps_process() for audit purpose.
+
+    ntem_hhpop_trim: pd.DataFrame
+        Dataframe containing NorMITs household population segmented by
+        full dimensions required by NorMITs land use tool (z, a, g, h, e, t, n, s).
+
+    Returns
+    -------
+    None
+    """
 
     audit_ntem_hhpop_trim = ntem_hhpop_trim[['msoa11cd', 'P_aghetns']]
     audit_ntem_hhpop_trim = audit_ntem_hhpop_trim.groupby(['msoa11cd'])['P_aghetns'].sum().reset_index()
@@ -211,7 +299,26 @@ def audit_3_2_7(self,
                 audit_original_hhpop: pd.DataFrame,
                 aj_crp: pd.DataFrame,
                 ) -> None:
-    # TODO(NK): Write doc string
+    """
+    Runs the audit checks required for Step 3.2.7.
+
+    Parameters
+    ----------
+    hhpop: pd.DataFrame
+        Dataframe containing household population.
+
+    audit_original_hhpop: pd.DataFrame
+        Dataframe containing zonal household population returned from
+        mye_aps_process() for audit purpose.
+
+    aj_crp: pd.DataFrame
+        Dataframe containing copy of MYPE compliant household
+        population segmented by zone and dwelling type.
+
+    Returns
+    -------
+    None
+    """
     zonaltot = hhpop.groupby(['z', 'MSOA'])[['people', 'NTEM_HH_pop']].sum().reset_index()
     zonaltot = zonaltot.rename(columns={'people': 'NorMITs_Zonal', 'NTEM_HH_pop': 'NTEM_Zonal'})
     audit_original_hhpop = audit_original_hhpop[['MSOA', 'Total_HHR']]
@@ -275,7 +382,31 @@ def audit_3_2_8(self,
                 hhpop_workers: pd.DataFrame,
                 hhpop_non_workers: pd.DataFrame,
                 ) -> None:
-    # TODO(NK): Do doc strings
+    """
+    Runs the audit checks required for Step 3.2.8.
+
+    Parameters
+    ----------
+    audit_3_2_8_data: pd.DataFrame
+        Dataframe containing ajusted NorMITS household population with
+        verified dwelling profile (by z,a,g,h,e,t,n,s).
+
+    audit_hhpop_workers_la: pd.DataFrame
+        Dataframe containing fully segmented worker population at LA level.
+
+    audit_hhpop_non_workers_la: pd.DataFrame
+        Dataframe containing fully segmented non worker population at LA level.
+
+    hhpop_workers: pd.DataFrame
+        Dataframe containing fully segmented worker population.
+
+    hhpop_non_workers: pd.DataFrame
+        Dataframe containing fully segmented non worker population.
+
+    Returns
+    -------
+    None
+    """
     audit_3_2_8_data = pd.merge(audit_3_2_8_data, audit_hhpop_workers_la,
                                 how='left', on=const.AUDIT_3_2_8_COLS)
     audit_3_2_8_data['people'] = audit_3_2_8_data['people'].fillna(0)
@@ -321,7 +452,36 @@ def audit_3_2_9(self,
                 hhpop_workers_la: pd.DataFrame,
                 hhpop_nwkrs_ag_la: pd.DataFrame,
                 ) -> None:
-    # TODO(NK): Do doc strings
+    """
+    Runs the audit checks required for Step 3.2.9.
+
+    Parameters
+    ----------
+    audit_hhpop_by_d: pd.DataFrame
+        Dataframe containing worker verified at the district level and segmented
+        by NorMITs segmentation for the base year.
+
+    aj_hhpop_non_workers_la: pd.DataFrame
+        Dataframe containing non worker verified at the district level and segmented
+        by NorMITs segmentation for the base year.
+
+    pe_df: pd.DataFrame
+        Dataframe containing zonal and household population at LA level.
+
+    pe_dag_for_audit: pd.DataFrame
+        Dataframe containing district level household population segmented
+        by age and gender derived from MYPE.
+
+    hhpop_workers_la: pd.DataFrame
+        Dataframe containing fully segmented worker population at LA level.
+
+    hhpop_nwkrs_ag_la: pd.DataFrame
+        Dataframe containing non worker population by age and gender at LA level.
+
+    Returns
+    -------
+    None
+    """
     audit_hhpop_by_d = audit_hhpop_by_d.append(aj_hhpop_non_workers_la)
     audit_hhpop_by_dag = audit_hhpop_by_d.copy()
     audit_hhpop_by_d = audit_hhpop_by_d.groupby('2021_LA_code')['total'].sum().reset_index()
@@ -376,7 +536,31 @@ def audit_3_2_10(self,
                  hhpop_combined: pd.DataFrame,
                  hhpop_combined_pdiff_extremes: pd.DataFrame,
                  ) -> None:
-    # TODO(NK): Do doc strings
+    """
+    Runs the audit checks required for Step 3.2.10.
+
+    Parameters
+    ----------
+    hhpop_combined_check_z: pd.DataFrame
+        Dataframe containing MSOA comparison between MYPE and output of this step on
+        total household population.
+
+    hhpop_combined_check_la: pd.DataFrame
+        Dataframe containing District l comparison between MYPE and output of this
+        step on total household population.
+
+    hhpop_combined: pd.DataFrame
+        Dataframe containing worker and non worker population.
+
+    hhpop_combined_pdiff_extremes: pd.DataFrame
+        Dataframe containing Extreme deviations of zonal total household population
+        between the output of this step after zonal adjustments according to district
+        level verification and MYPE.
+
+    Returns
+    -------
+    None
+    """
 
     gen.safe_dataframe_to_csv(hhpop_combined_check_z, self.hhpop_combined_check_z_path, index=False)
     gen.safe_dataframe_to_csv(hhpop_combined_check_la, self.hhpop_combined_check_la_path, index=False)
@@ -408,7 +592,22 @@ def audit_3_2_11_10(self,
                     all_pop_by_d: pd.DataFrame,
                     check_all_pop_by_d: pd.DataFrame,
                     ) -> None:
-    # TODO(NK): Do doc strings
+    """
+        Runs the audit checks required for Step 3.2.11.10
+
+        Parameters
+        ----------
+        all_pop_by_d: pd.DataFrame
+            Dataframe containing all population including CER.
+
+        check_all_pop_by_d: pd.DataFrame
+            Dataframe containing district level comparison between MYPE and output of
+            this step on total population.
+
+        Returns
+        -------
+        None
+    """
 
     out_lines = [
         '### Audit for the parts of Step 3.2.11 carried out directly by Step 3.2.10 ###',
@@ -437,7 +636,19 @@ def audit_3_2_11_10(self,
 def audit_3_2_11(self,
                  cer_pop_expanded: pd.DataFrame,
                  ) -> None:
-    # TODO(NK): Do doc strings
+    """
+    Runs the audit checks required for Step 3.2.11.
+
+    Parameters
+    ----------
+    cer_pop_expanded: pd.DataFrame
+        Dataframe containing Communal Establishment Residents by zone
+        and TfN traveller type (z, a, g ,h, e, n, s).
+
+    Returns
+    -------
+    None
+    """
     out_lines = [
         '### Audit for Step 3.2.10 ###',
         'Created: %s' % str(timing.get_datetime()),

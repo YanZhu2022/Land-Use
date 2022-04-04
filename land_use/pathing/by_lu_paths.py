@@ -47,9 +47,21 @@ class BaseYearLandUsePaths:
                  model_zoning: str,
                  ):
         """
-        Builds the export paths for base year land use model
+        Builds the import and export paths for base year land use model
+
         Parameters
         ----------
+        iteration: str,
+            The name of this iteration of the Base year Land Use model.
+
+        base_year: str,
+            The year for which the land use model has to run.
+
+        census_year: str,
+            Census year to be considered for the land use model.
+
+        model_zoning: str,
+            Zoning system to be considered in the model.
         """
         # Init
 
@@ -207,8 +219,8 @@ class BaseYearLandUsePaths:
                                                 % self.base_year)
         self.final_zonal_hh_pop_by_t_fname = os.path.join(self.output_folder,
                                                           const.FINAL_ZONAL_HH_POP_BY_T_FNAME % self.base_year)
-        self.all_pop_path = os.path.join(self.output_folder, const.ALL_POP_FNAME)
-        self.all_pop_by_t_path = os.path.join(self.output_folder, const.ALL_POP_T_FNAME)
+        self.all_pop_path = os.path.join(self.output_folder, const.ALL_POP_FNAME % self.base_year)
+        self.all_pop_by_t_path = os.path.join(self.output_folder, const.ALL_POP_T_FNAME % self.base_year)
         # Imports for 3.2.11
         self.nomis_mye_base_year_path = os.path.join(self.inputs_directory_mye, const.NOMIS_MYE_PATH % self.base_year)
 

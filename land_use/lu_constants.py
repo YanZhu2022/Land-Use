@@ -237,6 +237,20 @@ BY_POP_BUILD_STEP_DESCS = [
     'adjust pop with full dimensions',
     'process CER data'
 ]
+LIST_OF_TYPE_FOLDERS = ['01 Process', '02 Audits']
+
+LIST_OF_STEP_FOLDERS = [
+    '3.2.1_read_in_core_property_data',
+    '3.2.2_filled_property_adjustment',
+    '3.2.3_apply_household_occupancy',
+    '3.2.4_land_use_formatting',
+    '3.2.5_uplifting_base_year_pop_base_year_MYPE',
+    '3.2.6_expand_NTEM_pop',
+    '3.2.7_verify_population_profile_by_dwelling_type',
+    '3.2.8_subsets_of_workers+nonworkers',
+    '3.2.9_verify_district_level_worker_and_nonworker',
+    '3.2.10_adjust_zonal_pop_with_full_dimensions',
+    '3.2.11_process_CER_data']
 
 # Constants for Step 3.2.2
 ZONE_TRANSLATION_COL = {'lsoa_zone_id': 'lsoaZoneID',
