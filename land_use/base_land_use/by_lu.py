@@ -38,7 +38,7 @@ from land_use.pathing.by_lu_paths import BaseYearLandUsePaths
 
 class BaseYearLandUse(BaseYearLandUsePaths):
     _log_fname = "%s_base_year_land_use.log"
-    _running_report_fname = 'running_parameters.txt'
+    _running_report_fname = '%s_running_parameters.txt'
 
     # Constants
     __version__ = lu.__version__
@@ -181,7 +181,7 @@ class BaseYearLandUse(BaseYearLandUsePaths):
         ]
 
         # Write out to disk
-        output_path = os.path.join(self.write_folder, self._running_report_fname)
+        output_path = os.path.join(self.write_folder, self._running_report_fname % self.base_year)
         with open(output_path, 'w') as out:
             out.write('\n'.join(out_lines))
 
